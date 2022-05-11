@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.hashers import make_password,check_password
 from datetime import datetime
 from django.http import HttpResponse, JsonResponse
 from .models import Member
@@ -35,7 +36,7 @@ def member_reg(request):
 
         else:
             Member.objects.create(
-                member_id=member_id, passwd=passwd,  name=name, email=email, usage_flag='y',
+                member_id=member_id, passwd=make_password(passwd),  name=name, email=email, usage_flag='y',
                 reg_date=datetime.now(), update_date=datetime.now())
             context['message'] = name + "님 회원가입 되었습니다."
             return render(request, 'member/index.html', context)
@@ -50,22 +51,27 @@ def member_login(request):
         member_id = request.POST.get('member_id')
         passwd = request.POST.get('passwd')
 
+
         # 로그인 체크하기
-        rs = Member.objects.filter(member_id=member_id, passwd=passwd).first()
+        rs = Member.objects.filter(member_id=member_id).first()
         print(member_id + '/' + passwd)
         print(rs)
 
         #if rs.exists():
         if rs is not None:
 
-            # OK - 로그인
-            request.session['m_id'] = member_id
-            request.session['m_name'] = rs.name
+            if check_password(passwd, rs.passwd):
+                # OK - 로그인
+                request.session['m_id'] = member_id
+                request.session['m_name'] = rs.name
 
-            context['m_id'] = member_id
-            context['m_name'] = rs.name
-            context['message'] = rs.name + "님이 로그인하셨습니다."
-            return render(request, 'member/index.html', context)
+                context['m_id'] = member_id
+                context['m_name'] = rs.name
+                context['message'] = rs.name + "님이 로그인하셨습니다."
+                return render(request, 'member/index.html', context)
+            else:
+                context['message'] = "로그인 정보가 맞지않습니다.\\n\\n확인하신 후 다시 시도해 주십시오2."
+                return render(request, 'member/login.html', context)
 
         else:
 

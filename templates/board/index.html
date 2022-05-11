@@ -1,0 +1,40 @@
+{% extends 'include/base.html' %}
+{% block main_area %}
+board index.html 파일입니다.
+
+<br>
+{% if not 'm_id' in request.session %}
+    <a href="/member/register">[회원가입]</a><br>
+    <a href="/member/login">[로그인]</a>
+{% else %}
+    {{ request.session.m_name }} 님 어서오세요.
+    <br><br>
+    <a href="/member/logout">[로그아웃]</a>
+{% endif %}
+
+<br>
+[게시판 목록]
+<br>
+
+    <table border="1">
+    <tr>
+        <th style="text-align: center;">제목</th>
+        <th style="text-align: center;">글쓴이</th>
+        <th style="text-align: center;">쓴날짜</th>
+        <th style="text-align: center;">조회수</th>
+    </tr>
+
+    {% if boards.exists %}
+    {% for board in boards %}
+
+    {% endfor %}
+    {% else %}
+    <tr>
+        <td colspan="4" style="text-align: center;">등록된 글이 없습니다.</td>
+    </tr>
+    {% endif %}
+
+    </table>
+
+
+{% endblock %}

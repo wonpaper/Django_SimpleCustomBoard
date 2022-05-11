@@ -1,0 +1,65 @@
+{% extends 'include/base.html' %}
+{% block main_area %}
+
+{% if not 'm_id' in request.session %}
+    <a href="/member/register">[회원가입]</a><br>
+    <a href="/member/login">[로그인]</a>
+{% else %}
+    {{ request.session.m_name }} 님 어서오세요.
+    <br><br>
+    <a href="/member/logout">[로그아웃]</a>
+{% endif %}
+
+<div class="container">
+<div class="row mt-5">
+    <div class="col-12">
+[게시판 목록]
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+
+    <table class="table">
+    <thead>
+    <tr>
+        <th scope="col">제목</th>
+        <th scope="col" style="text-align: center;">글쓴이</th>
+        <th scope="col" style="text-align: center;">쓴날짜</th>
+        <th scope="col" style="text-align: center;">조회수</th>
+    </tr>
+    </thead>
+    {% if boards.exists %}
+    {% for board in boards %}
+    <tbody>
+    <tr>
+        <td class="row"><a href="/board/detail/{{ board.no }}">{{ board.subject }}</a>
+            {% if board.image1 or board.upfile1 %}
+                &nbsp;[파일有]
+            {% endif %}
+        </td>
+        <td style="text-align: center;">{{ board.member_no.name }}</td>
+        <td style="text-align: center;">{{ board.reg_date|date:'Y-m-d H:i' }}</td>
+        <td style="text-align: center;">{{ board.read_num }}</td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+        <td colspan="4" style="text-align: center;">등록된 글이 없습니다.</td>
+    </tr>
+    {% endif %}
+    </tbody>
+
+    </table>
+
+    <button type="button" class="btn btn-primary" onclick="location.href='/board/write/'">글쓰기</button>
+
+    </div>
+</div>
+</div>
+<br><br>
+
+{% if message %}
+    <script>alert('{{ message }}')</script>
+{% endif %}
+{% endblock %}

@@ -7,10 +7,13 @@
     <a href="/member/register">[회원가입]</a><br>
     <a href="/member/login">[로그인]</a>
 {% else %}
-    {{ m_name }} 님 어서오세요.
+    {{ request.session.m_name }} 님 어서오세요.
     <br><br>
     <a href="/member/logout">[로그아웃]</a>
 {% endif %}
+
+<br><br>
+<a href="/board/">[게시판 목록]</a>
 
 {% if message %}
 <script>alert('{{ message }}');</script>

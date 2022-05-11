@@ -1,0 +1,78 @@
+{% extends "include/base.html" %}
+{% block main_area %}
+
+{% if not 'm_id' in request.session %}
+    <a href="/member/register">[회원가입]</a><br>
+    <a href="/member/login">[로그인]</a>
+{% else %}
+    {{ request.session.m_name }} 님 어서오세요.
+    <br><br>
+    <a href="/member/logout">[로그아웃]</a>
+{% endif %}
+
+<div class="container">
+<div class="row mt-5">
+    <div class="col-12">
+[글보기]
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+
+
+<table class="table" border="1">
+<tr>
+    <td>제목</td>
+    <td>{{ board.subject }}</td>
+    <td>조회수</td>
+    <td>{{ board.read_num }}</td>
+</tr>
+<tr>
+    <td>글쓴이</td>
+    <td>{{ board.member_no.name }} [{{ board.member_no.member_id }}]</td>
+    <td>쓴날짜</td>
+    <td>{{ board.reg_date }}</td>
+</tr>
+<tr>
+    <td>이미지파일</td>
+    <td>
+{% if board.image1 %}
+    <a href="/board/download?path=board/images/{{ board.image1 }}">{{ board.image1 }}</a>
+{% endif %}
+    </td>
+    <td>첨부파일</td>
+    <td>
+{% if board.upfile1 %}
+    <a href="/board/download?path=board/files/{{ board.upfile1 }}">{{ board.upfile1 }}</a>
+{% endif %}
+    </td>
+</tr>
+<tr>
+    <td colspan="4" style="padding:10px 10px;">
+{% if board.image1 %}
+        <figure class="mb-4"><img class="img-fluid rounded" src="/media/board/images/{{ board.image1 }}" alt="{{ board.image1 }}" /></figure>
+{% endif %}
+        {{ board.content|linebreaksbr  }}
+    </td>
+</tr>
+</table>
+
+    <button type="button" class="btn btn-primary" onclick="location.href='/board/write/'">글쓰기</button>
+    <button type="button" class="btn btn-primary" onclick="location.href='/board/update/{{ board.no }}/'">수정하기</button>
+    <button type="button" class="btn btn-primary" onclick="boardDel({{ board.no }})">삭제하기</button>
+    <button type="button" class="btn btn-primary" onclick="location.href='/board/list/'">글목록</button>
+    </div>
+</div>
+</div>
+
+<br><br>
+
+<script>
+function boardDel(no) {
+    if (confirm("정말로 해당 글을 삭제하시겠습니까?")) {
+        location.href="/board/del/" + no + "/";
+    }
+}
+</script>
+{% endblock %}

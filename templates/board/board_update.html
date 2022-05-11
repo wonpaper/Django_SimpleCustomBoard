@@ -1,0 +1,126 @@
+{% extends 'include/base.html' %}
+{% block main_area %}
+{% if not 'm_id' in request.session %}
+    <a href="/member/register">[회원가입]</a><br>
+    <a href="/member/login">[로그인]</a>
+{% else %}
+    {{ request.session.m_name }} 님 어서오세요.
+    <br><br>
+    <a href="/member/logout">[로그아웃]</a>
+{% endif %}
+
+<div class="container">
+<div class="row mt-5">
+    <div class="col-12">
+[글수정]
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+
+<form name="f1" method="post" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+    <label for="member_no">글쓴이 <span style="color:red;">*</span></label>
+
+    <select id="member_no" name="member_no" class="form-control">
+        <option value="">=선택해주세요=</option>
+    {% for member in members %}
+        {% if member.id == board.member_no.id %}
+         <option value="{{ member.id }}" selected>{{ member.name }} [{{ member.member_id }}]</option>
+        {% else %}
+        <option value="{{ member.id }}">{{ member.name }} [{{ member.member_id }}]</option>
+        {% endif %}
+    {% endfor %}
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="subject">제목 <span style="color:red;">*</span></label>
+    <input type="text" name="subject" id="subject" placeholder="제목을 입력해 주세요." class="form-control" value="{{ board.subject }}">
+</div>
+<div class="form-group">
+    <label for="content">내용 <span style="color:red;">*</span></label>
+    <textarea id="content" name="content" class="form-control" placeholder="내용을 간략히 기입해 주십시오." rows="5">{{ board.content }}</textarea>
+</div>
+
+
+
+<div class="form-group">
+    <label for="image1">이미지</label>
+
+    {% if board.image1 %}
+    <div class="form-group">
+        <label for="old_image1">기존파일 : </label>
+        <span><a href="/board/download?path=board/images/{{ board.image1 }}" style="width:300px;">{{ board.image1 }}</a></span>
+        <div class="form-check" style="display: inline-block;">
+            <input type="checkbox" id="old_image1_del" name="old_image1_del" value="y" class="form-check-input" />
+            <label for="old_image1_del" class="form-check-label">삭제</label>
+        </div>
+    </div>
+    {% endif %}
+
+    <input type="file" name="image1" id="image1" placeholder="이미지파일은 선택해 주십시오." class="form-control">
+</div>
+
+<div class="form-group">
+    <label for="upfile1">첨부파일</label>
+
+    {% if board.upfile1 %}
+    <div class="form-group">
+        <label for="old_upfile1">기존파일 : </label>
+        <span><a href="/board/download?path=board/files/{{ board.upfile1 }}" style="width:300px;">{{ board.upfile1 }}</a></span>
+        <div class="form-check" style="display: inline-block;">
+            <input type="checkbox" id="old_upfile1_del" name="old_upfile1_del" value="y" class="form-check-input" />
+            <label for="old_upfile1_del" class="form-check-label">삭제</label>
+        </div>
+    </div>
+    {% endif %}
+
+    <input type="file" name="upfile1" id="upfile1" placeholder="첨부하실 파일을 선택해 주십시오." class="form-control">
+</div>
+</form>
+
+        <button type="button" class="btn btn-primary" onclick="boardUpdate()">수정하기</button>
+        <button type="button" class="btn btn-primary" onclick="location.href='/board/'">글목록</button>
+    </div>
+</div>
+</div>
+<br><br>
+
+<script>
+function boardUpdate() {
+    var form = document.f1;
+    if (form.member_no.value=="") {
+        alert("글쓴이를 선택해 주십시오.");
+        form.member_no.focus();
+        return;
+    }
+
+    if (form.subject.value=="") {
+        alert("제목을 입력해 주십시오.");
+        form.subject.focus();
+        return;
+    }
+    if (form.content.value=="") {
+        alert("내용을 간략히 기입해 주십시오.");
+        form.content.focus();
+        return;
+    }
+/*
+    if (form.passwd.value=="") {
+        alert("비밀번호를 입력해 주십시오.");
+        form.passwd.focus();
+        return;
+    }
+ */
+    form.action = "/board/update/{{ board.no }}/";
+    form.submit();
+}
+</script>
+
+{% if message %}
+    <script>alert('{{ message }}')</script>
+{% endif %}
+{% endblock %}
